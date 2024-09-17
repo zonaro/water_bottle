@@ -19,9 +19,9 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key? key, required this.title}) : super(key: key);
-
   final String title;
+
+  MyHomePage({Key? key, required this.title}) : super(key: key);
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -35,11 +35,7 @@ class _MyHomePageState extends State<MyHomePage> {
   var selectedStyle = 0;
   @override
   Widget build(BuildContext context) {
-    final plain = WaterBottle(
-        key: plainBottleRef,
-        waterColor: Colors.blue,
-        bottleColor: Colors.lightBlue,
-        capColor: Colors.blueGrey);
+    final plain = WaterBottle(key: plainBottleRef, liquidColor: Colors.blue, bottleColor: Colors.lightBlue, capColor: Colors.blueGrey);
     final sphere = SphericalBottle(
       key: sphereBottleRef,
       waterColor: Colors.red,
