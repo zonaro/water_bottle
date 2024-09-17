@@ -6,9 +6,11 @@ import 'bubble.dart';
 import 'water_container.dart';
 import 'wave.dart';
 
-class WaterBottle extends StatefulWidget {
+typedef TestTube = CilindricBottle;
+
+class CilindricBottle extends StatefulWidget {
   /// Color of the water
-  final Color liquidColor;
+  final Color waterColor;
 
   /// Color of the bottle
   final Color bottleColor;
@@ -16,16 +18,63 @@ class WaterBottle extends StatefulWidget {
   /// Color of the bottle cap
   final Color? capColor;
 
+  final int bubbleCount;
+
+  final int waveCount;
+
   /// Create a regular bottle, you can customize it's part with
-  /// [liquidColor], [bottleColor], [capColor].
-  WaterBottle({
+  /// [waterColor], [bottleColor], [capColor].
+  CilindricBottle({
     Key? key,
-    this.liquidColor = Colors.blue,
-    this.bottleColor = Colors.blue,
+    this.waterColor = Colors.blue,
+    this.bottleColor = const Color(0xFF8DCBFF),
     this.capColor = null,
+    this.bubbleCount = 10,
+    this.waveCount = 3,
   }) : super(key: key);
   @override
-  WaterBottleState createState() => WaterBottleState();
+  CilindricBottleState createState() => CilindricBottleState();
+}
+
+class CilindricBottleState extends State<CilindricBottle> with TickerProviderStateMixin, WaterContainer {
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      fit: StackFit.expand,
+      clipBehavior: Clip.hardEdge,
+      children: [
+        AspectRatio(
+          aspectRatio: 1 / 1,
+          child: CustomPaint(
+            painter: WaterBottlePainter(
+              waves: waves,
+              bubbles: bubbles,
+              level: level,
+              bottleColor: widget.bottleColor,
+              capColor: widget.capColor,
+              bubbleCount: widget.bubbleCount,
+              waveCount: widget.waveCount,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  @override
+  void dispose() {
+    disposeWater();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    initWater(widget.waterColor, this);
+    waves.first.animation.addListener(() {
+      setState(() {});
+    });
+  }
 }
 
 class WaterBottlePainter extends CustomPainter {
@@ -36,7 +85,7 @@ class WaterBottlePainter extends CustomPainter {
   final List<Bubble> bubbles;
 
   /// Water level, 0 = no water, 1 = full water
-  final double waterLevel;
+  final double level;
 
   /// Bottle color
   final Color bottleColor;
@@ -44,10 +93,19 @@ class WaterBottlePainter extends CustomPainter {
   /// Bottle cap color
   final Color? capColor;
 
-  final int waveCount = 3;
-  final int bubbleCount = 10;
+  final int waveCount;
+  final int bubbleCount;
 
-  WaterBottlePainter({Listenable? repaint, required this.waves, required this.bubbles, required this.waterLevel, required this.bottleColor, required this.capColor}) : super(repaint: repaint);
+  WaterBottlePainter({
+    Listenable? repaint,
+    required this.waves,
+    required this.bubbles,
+    required this.level,
+    required this.bottleColor,
+    required this.capColor,
+    this.waveCount = 3,
+    this.bubbleCount = 10,
+  }) : super(repaint: repaint);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -60,13 +118,13 @@ class WaterBottlePainter extends CustomPainter {
     }
     {
       final paint = Paint();
-      paint.color = bottleColor;
+      paint.color = bottleColor.withOpacity(.3);
       paint.style = PaintingStyle.fill;
       final rect = Rect.fromLTRB(0, 0, size.width, size.height);
       canvas.saveLayer(rect, paint);
       paintBottleMask(canvas, size, paint);
     }
-    if (waterLevel > 0) {
+    if (level > 0) {
       {
         final paint = Paint();
         paint.blendMode = BlendMode.srcIn;
@@ -105,7 +163,7 @@ class WaterBottlePainter extends CustomPainter {
   void paintBubbles(Canvas canvas, Size size, Paint paint) {
     for (var bubble in bubbles) {
       paint.color = bubble.color;
-      final offset = Offset(bubble.x * size.width, (bubble.y + 1.0 - waterLevel) * size.height);
+      final offset = Offset(bubble.x * size.width, (bubble.y + 1.0 - level) * size.height);
       final radius = bubble.size * math.min(size.width, size.height);
       canvas.drawCircle(offset, radius, paint);
     }
@@ -177,7 +235,7 @@ class WaterBottlePainter extends CustomPainter {
       final scaleY = desiredH / wave.svgData.getBounds().height;
       final translateX = -wave.offset * translateRange;
       final waterRange = size.height + desiredH; // 0 = no water = size.height; 1 = full water = -size.width
-      final translateY = (1.0 - waterLevel) * waterRange - desiredH;
+      final translateY = (1.0 - level) * waterRange - desiredH;
       transform.translate(translateX, translateY);
       transform.scale(scaleX, scaleY);
       canvas.drawPath(wave.svgData.transform(transform.storage), paint);
@@ -193,43 +251,4 @@ class WaterBottlePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(WaterBottlePainter oldDelegate) => true;
-}
-
-class WaterBottleState extends State<WaterBottle> with TickerProviderStateMixin, WaterContainer {
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      fit: StackFit.expand,
-      clipBehavior: Clip.hardEdge,
-      children: [
-        AspectRatio(
-          aspectRatio: 1 / 1,
-          child: CustomPaint(
-            painter: WaterBottlePainter(
-              waves: waves,
-              bubbles: bubbles,
-              waterLevel: waterLevel,
-              bottleColor: widget.bottleColor,
-              capColor: widget.capColor,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  @override
-  void dispose() {
-    disposeWater();
-    super.dispose();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    initWater(widget.liquidColor, this);
-    waves.first.animation.addListener(() {
-      setState(() {});
-    });
-  }
 }

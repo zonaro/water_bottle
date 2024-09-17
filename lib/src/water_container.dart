@@ -18,8 +18,8 @@ class WaterContainer {
   /// How many bubbles can exist at the same time? The more the expensive, default 10
   int bubbleCount = 10;
 
-  /// You can set water level with [waterLevel]. 0 = no water, 1 = full water
-  double waterLevel = 0.5;
+  /// You can set water level with [level]. 0 = no water, 1 = full water
+  double level = 0;
 
   /// Kill wave and bubble objects
   void disposeWater() {
@@ -29,6 +29,7 @@ class WaterContainer {
 
   /// Instantiate wave and bubble objects
   void initWater(Color themeColor, TickerProvider ticker) {
+    // if (level > 0) {
     var f = math.Random().nextInt(5000) + 15000;
     var d = math.Random().nextInt(500) + 1500;
     var color = HSLColor.fromColor(themeColor);
@@ -49,5 +50,6 @@ class WaterContainer {
       bubble.randomize();
       bubbles.add(bubble);
     }
+    // }
   }
 }
