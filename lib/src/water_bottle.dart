@@ -118,7 +118,7 @@ class WaterBottlePainter extends CustomPainter {
     }
     {
       final paint = Paint();
-      paint.color = bottleColor.withOpacity(.3);
+      paint.color = bottleColor.withOpacity(.5);
       paint.style = PaintingStyle.fill;
       final rect = Rect.fromLTRB(0, 0, size.width, size.height);
       canvas.saveLayer(rect, paint);
@@ -127,7 +127,7 @@ class WaterBottlePainter extends CustomPainter {
     if (level > 0) {
       {
         final paint = Paint();
-        paint.blendMode = BlendMode.srcIn;
+        paint.blendMode = BlendMode.color;
         paint.style = PaintingStyle.fill;
         paintWaves(canvas, size, paint);
       }
