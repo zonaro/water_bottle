@@ -6,11 +6,13 @@ import 'bubble.dart';
 import 'wave.dart';
 
 class WaterContainer {
+  Color waveColor = Colors.blue;
+
   /// Holds all wave object instances
-  List<WaveLayer> waves = List<WaveLayer>.empty(growable: true);
+  List<WaveLayer> waves = [];
 
   /// Holds all bubble object instances
-  List<Bubble> bubbles = List<Bubble>.empty(growable: true);
+  List<Bubble> bubbles = [];
 
   /// How many wave layer do we need, default 3
   int waveCount = 3;
@@ -18,8 +20,7 @@ class WaterContainer {
   /// How many bubbles can exist at the same time? The more the expensive, default 10
   int bubbleCount = 10;
 
-  /// You can set water level with [level]. 0 = no water, 1 = full water
-  double level = 0;
+  final random = math.Random();
 
   /// Kill wave and bubble objects
   void disposeWater() {
@@ -28,17 +29,16 @@ class WaterContainer {
   }
 
   /// Instantiate wave and bubble objects
-  void initWater(Color themeColor, TickerProvider ticker) {
-    // if (level > 0) {
-    var f = math.Random().nextInt(5000) + 15000;
-    var d = math.Random().nextInt(500) + 1500;
-    var color = HSLColor.fromColor(themeColor);
-    for (var i = 1; i <= waveCount; i++) {
+  void initWater(TickerProvider ticker) {
+    waves.clear();
+    bubbles.clear();
+    var f = random.nextInt(5000) + 15000;
+    var d = random.nextInt(500) + 1500;
+
+    for (var i = 0; i < waveCount; i++) {
       final wave = WaveLayer();
       wave.init(ticker, frequency: f);
-      final sat = color.saturation * math.pow(0.6, (waveCount - i));
-      final light = color.lightness * math.pow(0.8, (waveCount - i));
-      wave.color = color.withSaturation(sat).withLightness(light).toColor();
+      setWaveColor(waveColor, i);
       waves.add(wave);
       f -= d;
       f = math.max(f, 0);
@@ -50,6 +50,14 @@ class WaterContainer {
       bubble.randomize();
       bubbles.add(bubble);
     }
-    // }
+  }
+
+  void setWaveColor(Color c, int i) {
+    waveColor = c;
+    var color = HSLColor.fromColor(waveColor);
+    var wave = waves[i];
+    final sat = color.saturation * math.pow(0.6, (waveCount));
+    final light = color.lightness * math.pow(0.8, (waveCount));
+    wave.color = color.withSaturation(sat).withLightness(light).toColor();
   }
 }

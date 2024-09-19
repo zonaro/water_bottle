@@ -28,22 +28,22 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final plainBottleRef = GlobalKey<CilindricBottleState>();
-  final sphereBottleRef = GlobalKey<SphericalBottleState>();
-  final triangleBottleRef = GlobalKey<TriangularBottleState>();
   var waterLevel = 0.5;
   var selectedStyle = 0;
   @override
   Widget build(BuildContext context) {
-    final plain = CilindricBottle(key: plainBottleRef, waterColor: Colors.blue, bottleColor: Colors.lightBlue, capColor: Colors.blueGrey);
+    final plain = CilindricBottle(
+      waterColor: Colors.blue,
+      bottleColor: Colors.lightBlue,
+      capColor: Colors.blueGrey,
+      level: waterLevel,
+    );
     final sphere = SphericalBottle(
-      key: sphereBottleRef,
       waterColor: Colors.red,
       bottleColor: Colors.redAccent,
       capColor: Colors.grey.shade700,
     );
     final triangle = TriangularBottle(
-      key: triangleBottleRef,
       waterColor: Colors.lime,
       bottleColor: Colors.limeAccent,
       capColor: Colors.red,
@@ -99,9 +99,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 setState(
                   () {
                     waterLevel = value;
-                    plainBottleRef.currentState?.level = waterLevel;
-                    sphereBottleRef.currentState?.level = waterLevel;
-                    triangleBottleRef.currentState?.level = waterLevel;
                   },
                 );
               },

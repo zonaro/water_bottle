@@ -7,6 +7,7 @@ import 'water_container.dart';
 import 'wave.dart';
 
 typedef TestTube = CilindricBottle;
+typedef WaterBottle = CilindricBottle;
 
 class CilindricBottle extends StatefulWidget {
   /// Color of the water
@@ -22,6 +23,8 @@ class CilindricBottle extends StatefulWidget {
 
   final int waveCount;
 
+  final double level;
+
   /// Create a regular bottle, you can customize it's part with
   /// [waterColor], [bottleColor], [capColor].
   CilindricBottle({
@@ -31,7 +34,31 @@ class CilindricBottle extends StatefulWidget {
     this.capColor = null,
     this.bubbleCount = 10,
     this.waveCount = 3,
+    this.level = 0.5,
   }) : super(key: key);
+
+  factory CilindricBottle.withQuantity({
+    required double quantity,
+    required double maxQuantity,
+    Color waterColor = Colors.blue,
+    Color bottleColor = const Color(0xFF8DCBFF),
+    Color? capColor,
+    int bubbleCount = 10,
+    int waveCount = 3,
+  }) {
+    if (maxQuantity == 0) maxQuantity = 1;
+    quantity = quantity.clamp(0, maxQuantity);
+
+    return CilindricBottle(
+      waterColor: waterColor,
+      bottleColor: bottleColor,
+      capColor: capColor,
+      bubbleCount: bubbleCount,
+      waveCount: waveCount,
+      level: quantity / maxQuantity,
+    );
+  }
+
   @override
   CilindricBottleState createState() => CilindricBottleState();
 }
@@ -39,6 +66,14 @@ class CilindricBottle extends StatefulWidget {
 class CilindricBottleState extends State<CilindricBottle> with TickerProviderStateMixin, WaterContainer {
   @override
   Widget build(BuildContext context) {
+    bubbleCount = widget.bubbleCount;
+    waveCount = widget.waveCount;
+    if (widget.waterColor != waveColor) {
+      waveColor = widget.waterColor;
+      for (var wave in waves) {
+        wave.color = waveColor;
+      }
+    }
     return Stack(
       fit: StackFit.expand,
       clipBehavior: Clip.hardEdge,
@@ -49,7 +84,7 @@ class CilindricBottleState extends State<CilindricBottle> with TickerProviderSta
             painter: WaterBottlePainter(
               waves: waves,
               bubbles: bubbles,
-              level: level,
+              level: widget.level,
               bottleColor: widget.bottleColor,
               capColor: widget.capColor,
               bubbleCount: widget.bubbleCount,
@@ -70,7 +105,7 @@ class CilindricBottleState extends State<CilindricBottle> with TickerProviderSta
   @override
   void initState() {
     super.initState();
-    initWater(widget.waterColor, this);
+    initWater(this);
     waves.first.animation.addListener(() {
       setState(() {});
     });
@@ -118,7 +153,7 @@ class WaterBottlePainter extends CustomPainter {
     }
     {
       final paint = Paint();
-      paint.color = bottleColor.withOpacity(.5);
+      paint.color = bottleColor;
       paint.style = PaintingStyle.fill;
       final rect = Rect.fromLTRB(0, 0, size.width, size.height);
       canvas.saveLayer(rect, paint);
@@ -127,7 +162,7 @@ class WaterBottlePainter extends CustomPainter {
     if (level > 0) {
       {
         final paint = Paint();
-        paint.blendMode = BlendMode.color;
+        paint.blendMode = BlendMode.srcIn;
         paint.style = PaintingStyle.fill;
         paintWaves(canvas, size, paint);
       }

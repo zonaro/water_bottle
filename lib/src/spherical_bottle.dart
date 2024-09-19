@@ -7,8 +7,9 @@ import 'water_bottle.dart';
 import 'water_container.dart';
 import 'wave.dart';
 
-typedef RoundBottomFlask = SphericalBottle;
 typedef RoundBottomBottle = SphericalBottle;
+typedef RoundBottomFlask = SphericalBottle;
+
 class SphericalBottle extends StatefulWidget {
   /// Color of the water
   final Color waterColor;
@@ -17,13 +18,23 @@ class SphericalBottle extends StatefulWidget {
   final Color bottleColor;
 
   /// Color of the bottle cap
-  final Color capColor;
+  final Color? capColor;
 
-  /// Create a spherical bottle, you can customize it's part with
-  /// [waterColor], [bottleColor], [capColor].
-  /// Note that if the width/height ratio get small enough,
-  /// the bottle will automatically reduce it's neck
-  SphericalBottle({Key? key, this.waterColor = Colors.blue, this.bottleColor = Colors.blue, this.capColor = Colors.blueGrey}) : super(key: key);
+  final int bubbleCount;
+
+  final int waveCount;
+
+  final double level;
+
+  SphericalBottle({
+    Key? key,
+    this.waterColor = Colors.blue,
+    this.bottleColor = Colors.blue,
+    this.capColor = Colors.blueGrey,
+    this.bubbleCount = 10,
+    this.waveCount = 3,
+    this.level = .5,
+  }) : super(key: key);
   @override
   SphericalBottleState createState() => SphericalBottleState();
 }
@@ -37,7 +48,7 @@ class SphericalBottlePainter extends WaterBottlePainter {
     required List<Bubble> bubbles,
     required double waterLevel,
     required Color bottleColor,
-    required Color capColor,
+    required Color? capColor,
   }) : super(
           repaint: repaint,
           waves: waves,
@@ -138,6 +149,8 @@ class SphericalBottlePainter extends WaterBottlePainter {
 class SphericalBottleState extends State<SphericalBottle> with TickerProviderStateMixin, WaterContainer {
   @override
   Widget build(BuildContext context) {
+    bubbleCount = widget.bubbleCount;
+    waveCount = widget.waveCount;
     return Stack(
       fit: StackFit.expand,
       clipBehavior: Clip.hardEdge,
@@ -148,7 +161,7 @@ class SphericalBottleState extends State<SphericalBottle> with TickerProviderSta
             painter: SphericalBottlePainter(
               waves: waves,
               bubbles: bubbles,
-              waterLevel: level,
+              waterLevel: widget.level,
               bottleColor: widget.bottleColor,
               capColor: widget.capColor,
             ),
@@ -167,7 +180,7 @@ class SphericalBottleState extends State<SphericalBottle> with TickerProviderSta
   @override
   void initState() {
     super.initState();
-    initWater(widget.waterColor, this);
+    initWater( this);
     waves.first.animation.addListener(() {
       setState(() {});
     });

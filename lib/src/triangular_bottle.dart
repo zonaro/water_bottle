@@ -7,9 +7,9 @@ import 'water_bottle.dart';
 import 'water_container.dart';
 import 'wave.dart';
 
-
-typedef EnrlenmeyerFlask = TriangularBottle;
 typedef EnrlenmeyerBottle = TriangularBottle;
+typedef EnrlenmeyerFlask = TriangularBottle;
+
 class TriangularBottle extends StatefulWidget {
   /// Color of the water
   final Color waterColor;
@@ -18,8 +18,23 @@ class TriangularBottle extends StatefulWidget {
   final Color bottleColor;
 
   /// Color of the bottle cap
-  final Color capColor;
-  TriangularBottle({Key? key, this.waterColor = Colors.blue, this.bottleColor = Colors.blue, this.capColor = Colors.blueGrey}) : super(key: key);
+  final Color? capColor;
+
+  final int bubbleCount;
+
+  final int waveCount;
+
+  final double level;
+
+  TriangularBottle({
+    Key? key,
+    this.waterColor = Colors.blue,
+    this.bottleColor = Colors.blue,
+    this.capColor = Colors.blueGrey,
+    this.bubbleCount = 10,
+    this.waveCount = 3,
+    this.level = .5,
+  }) : super(key: key);
   @override
   TriangularBottleState createState() => TriangularBottleState();
 }
@@ -27,6 +42,8 @@ class TriangularBottle extends StatefulWidget {
 class TriangularBottleState extends State<TriangularBottle> with TickerProviderStateMixin, WaterContainer {
   @override
   Widget build(BuildContext context) {
+    bubbleCount = widget.bubbleCount;
+    waveCount = widget.waveCount;
     return Stack(
       fit: StackFit.expand,
       clipBehavior: Clip.hardEdge,
@@ -37,7 +54,7 @@ class TriangularBottleState extends State<TriangularBottle> with TickerProviderS
             painter: TriangularBottleStatePainter(
               waves: waves,
               bubbles: bubbles,
-              waterLevel: level,
+              waterLevel: widget.level,
               bottleColor: widget.bottleColor,
               capColor: widget.capColor,
             ),
@@ -56,7 +73,7 @@ class TriangularBottleState extends State<TriangularBottle> with TickerProviderS
   @override
   void initState() {
     super.initState();
-    initWater(widget.waterColor, this);
+    initWater(this);
     waves.first.animation.addListener(() {
       setState(() {});
     });
@@ -71,7 +88,7 @@ class TriangularBottleStatePainter extends WaterBottlePainter {
     required List<Bubble> bubbles,
     required double waterLevel,
     required Color bottleColor,
-    required Color capColor,
+    required Color? capColor,
   }) : super(
           repaint: repaint,
           waves: waves,
