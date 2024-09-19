@@ -6,7 +6,7 @@ import 'bubble.dart';
 import 'wave.dart';
 
 class WaterContainer {
-  Color waveColor = Colors.blue;
+  Color waterColor = Colors.blue;
 
   /// Holds all wave object instances
   List<WaveLayer> waves = [];
@@ -38,7 +38,7 @@ class WaterContainer {
     for (var i = 0; i < waveCount; i++) {
       final wave = WaveLayer();
       wave.init(ticker, frequency: f);
-      setWaterColor(waveColor, i);
+      setWaveColor(waterColor, i);
       waves.add(wave);
       f -= d;
       f = math.max(f, 0);
@@ -52,9 +52,15 @@ class WaterContainer {
     }
   }
 
-  void setWaterColor(Color c, int i) {
-    waveColor = c;
-    var color = HSLColor.fromColor(waveColor);
+  void setWaterColor(Color c) {
+    for (var i = 0; i < waves.length; i++) {
+      setWaveColor(c, i);
+    }
+  }
+
+  void setWaveColor(Color c, int i) {
+    waterColor = c;
+    var color = HSLColor.fromColor(waterColor);
     var wave = waves[i];
     final sat = color.saturation * math.pow(0.6, (waveCount));
     final light = color.lightness * math.pow(0.8, (waveCount));

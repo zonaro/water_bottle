@@ -68,7 +68,7 @@ class CilindricBottleState extends State<CilindricBottle> with TickerProviderSta
   Widget build(BuildContext context) {
     bubbleCount = widget.bubbleCount;
     waveCount = widget.waveCount;
-    if (widget.waterColor != waveColor) {
+    if (widget.waterColor != waterColor) {
       setWaterColor(widget.waterColor);
     }
     return Stack(
@@ -102,6 +102,7 @@ class CilindricBottleState extends State<CilindricBottle> with TickerProviderSta
   @override
   void initState() {
     super.initState();
+    waterColor = widget.waterColor;
     initWater(this);
     waves.first.animation.addListener(() {
       setState(() {});
