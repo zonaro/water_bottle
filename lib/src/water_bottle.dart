@@ -69,10 +69,7 @@ class CilindricBottleState extends State<CilindricBottle> with TickerProviderSta
     bubbleCount = widget.bubbleCount;
     waveCount = widget.waveCount;
     if (widget.waterColor != waveColor) {
-      waveColor = widget.waterColor;
-      for (var wave in waves) {
-        wave.color = waveColor;
-      }
+      setWaterColor(widget.waterColor);
     }
     return Stack(
       fit: StackFit.expand,

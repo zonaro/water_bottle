@@ -38,7 +38,7 @@ class WaterContainer {
     for (var i = 0; i < waveCount; i++) {
       final wave = WaveLayer();
       wave.init(ticker, frequency: f);
-      setWaveColor(waveColor, i);
+      setWaterColor(waveColor, i);
       waves.add(wave);
       f -= d;
       f = math.max(f, 0);
@@ -52,7 +52,7 @@ class WaterContainer {
     }
   }
 
-  void setWaveColor(Color c, int i) {
+  void setWaterColor(Color c, int i) {
     waveColor = c;
     var color = HSLColor.fromColor(waveColor);
     var wave = waves[i];
