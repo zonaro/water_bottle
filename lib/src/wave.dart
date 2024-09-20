@@ -39,8 +39,7 @@ class WaveLayer {
   /// SVG data
   final svgData = Path();
 
-  /// Wave color
-  Color color = Colors.blueGrey;
+ 
 
   /// Current offset
   double get offset => animation.value;

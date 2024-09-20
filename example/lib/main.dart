@@ -34,8 +34,8 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     final plain = CilindricBottle(
       waterColor: Colors.blue,
-      bottleColor: Colors.lightBlue,
-      capColor: Colors.blueGrey,
+      
+      
       level: waterLevel,
     );
     final sphere = SphericalBottle(

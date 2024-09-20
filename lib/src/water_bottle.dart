@@ -17,7 +17,7 @@ class CilindricBottle extends StatefulWidget {
   final Color bottleColor;
 
   /// Color of the bottle cap
-  final Color? capColor;
+  final Color capColor;
 
   final int bubbleCount;
 
@@ -28,21 +28,21 @@ class CilindricBottle extends StatefulWidget {
   /// Create a regular bottle, you can customize it's part with
   /// [waterColor], [bottleColor], [capColor].
   CilindricBottle({
-    Key? key,
+    super.key,
     this.waterColor = Colors.blue,
-    this.bottleColor = const Color(0xFF8DCBFF),
-    this.capColor = null,
+    this.bottleColor = Colors.cyan,
+    this.capColor = Colors.brown,
     this.bubbleCount = 10,
     this.waveCount = 3,
     this.level = 0.5,
-  }) : super(key: key);
+  });
 
   factory CilindricBottle.withQuantity({
     required double quantity,
     required double maxQuantity,
     Color waterColor = Colors.blue,
     Color bottleColor = const Color(0xFF8DCBFF),
-    Color? capColor,
+    Color capColor = Colors.brown,
     int bubbleCount = 10,
     int waveCount = 3,
   }) {
@@ -68,9 +68,9 @@ class CilindricBottleState extends State<CilindricBottle> with TickerProviderSta
   Widget build(BuildContext context) {
     bubbleCount = widget.bubbleCount;
     waveCount = widget.waveCount;
-    if (widget.waterColor != waterColor) {
-      setWaterColor(widget.waterColor);
-    }
+    // if (widget.waterColor != waterColor) {
+    //   setWaterColor(widget.waterColor);
+    // }
     return Stack(
       fit: StackFit.expand,
       clipBehavior: Clip.hardEdge,
@@ -86,6 +86,7 @@ class CilindricBottleState extends State<CilindricBottle> with TickerProviderSta
               capColor: widget.capColor,
               bubbleCount: widget.bubbleCount,
               waveCount: widget.waveCount,
+              waterColor: widget.waterColor,
             ),
           ),
         ),
@@ -102,7 +103,6 @@ class CilindricBottleState extends State<CilindricBottle> with TickerProviderSta
   @override
   void initState() {
     super.initState();
-    waterColor = widget.waterColor;
     initWater(this);
     waves.first.animation.addListener(() {
       setState(() {});
@@ -120,25 +120,28 @@ class WaterBottlePainter extends CustomPainter {
   /// Water level, 0 = no water, 1 = full water
   final double level;
 
+  final Color waterColor;
+
   /// Bottle color
   final Color bottleColor;
 
   /// Bottle cap color
-  final Color? capColor;
+  final Color capColor;
 
   final int waveCount;
   final int bubbleCount;
 
   WaterBottlePainter({
-    Listenable? repaint,
+    super.repaint,
     required this.waves,
     required this.bubbles,
     required this.level,
     required this.bottleColor,
     required this.capColor,
+    required this.waterColor,
     this.waveCount = 3,
     this.bubbleCount = 10,
-  }) : super(repaint: repaint);
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -151,7 +154,7 @@ class WaterBottlePainter extends CustomPainter {
     }
     {
       final paint = Paint();
-      paint.color = bottleColor;
+      paint.color = HSLColor.fromColor(bottleColor).withLightness(.5).toColor();
       paint.style = PaintingStyle.fill;
       final rect = Rect.fromLTRB(0, 0, size.width, size.height);
       canvas.saveLayer(rect, paint);
@@ -178,11 +181,12 @@ class WaterBottlePainter extends CustomPainter {
       paintGlossyOverlay(canvas, size, paint);
     }
     canvas.restore();
-    if (capColor != null) {
+
+    {
       final paint = Paint();
       paint.blendMode = BlendMode.srcATop;
       paint.style = PaintingStyle.fill;
-      paint.color = capColor!;
+      paint.color = capColor;
       paintCap(canvas, size, paint);
     }
   }
@@ -259,7 +263,10 @@ class WaterBottlePainter extends CustomPainter {
 
   void paintWaves(Canvas canvas, Size size, Paint paint) {
     for (var wave in waves) {
-      paint.color = wave.color;
+      var color = HSLColor.fromColor(this.waterColor);
+      final sat = color.saturation * math.pow(0.6, (waveCount - waves.indexOf(wave)));
+      final light = color.lightness * math.pow(0.8, (waveCount - waves.indexOf(wave)));
+      paint.color = color.withSaturation(sat).withLightness(light).toColor();
       final transform = Matrix4.identity();
       final desiredW = 15 * size.width;
       final desiredH = 0.1 * size.height;

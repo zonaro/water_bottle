@@ -18,7 +18,7 @@ class SphericalBottle extends StatefulWidget {
   final Color bottleColor;
 
   /// Color of the bottle cap
-  final Color? capColor;
+  final Color capColor;
 
   final int bubbleCount;
 
@@ -29,8 +29,8 @@ class SphericalBottle extends StatefulWidget {
   SphericalBottle({
     Key? key,
     this.waterColor = Colors.blue,
-    this.bottleColor = Colors.blue,
-    this.capColor = Colors.blueGrey,
+    this.bottleColor = Colors.cyan,
+    this.capColor = Colors.brown,
     this.bubbleCount = 10,
     this.waveCount = 3,
     this.level = .5,
@@ -42,20 +42,22 @@ class SphericalBottle extends StatefulWidget {
 class SphericalBottlePainter extends WaterBottlePainter {
   // At which point should we cut off the neck of the bottle
   static const BREAK_POINT = 1.2;
-  SphericalBottlePainter({
-    Listenable? repaint,
-    required List<WaveLayer> waves,
-    required List<Bubble> bubbles,
-    required double waterLevel,
-    required Color bottleColor,
-    required Color? capColor,
-  }) : super(
+  SphericalBottlePainter(
+      {Listenable? repaint,
+      required List<WaveLayer> waves,
+      required List<Bubble> bubbles,
+      required double waterLevel,
+      required Color bottleColor,
+      required Color capColor,
+      required Color waterColor})
+      : super(
           repaint: repaint,
           waves: waves,
           bubbles: bubbles,
           level: waterLevel,
           bottleColor: bottleColor,
           capColor: capColor,
+          waterColor: Colors.blue,
         );
 
   @override
@@ -164,6 +166,7 @@ class SphericalBottleState extends State<SphericalBottle> with TickerProviderSta
               waterLevel: widget.level,
               bottleColor: widget.bottleColor,
               capColor: widget.capColor,
+              waterColor: widget.waterColor,
             ),
           ),
         ),
@@ -180,7 +183,7 @@ class SphericalBottleState extends State<SphericalBottle> with TickerProviderSta
   @override
   void initState() {
     super.initState();
-    initWater( this);
+    initWater(this);
     waves.first.animation.addListener(() {
       setState(() {});
     });

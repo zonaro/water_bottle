@@ -18,7 +18,7 @@ class TriangularBottle extends StatefulWidget {
   final Color bottleColor;
 
   /// Color of the bottle cap
-  final Color? capColor;
+  final Color capColor;
 
   final int bubbleCount;
 
@@ -29,7 +29,7 @@ class TriangularBottle extends StatefulWidget {
   TriangularBottle({
     Key? key,
     this.waterColor = Colors.blue,
-    this.bottleColor = Colors.blue,
+    this.bottleColor = Colors.cyan,
     this.capColor = Colors.blueGrey,
     this.bubbleCount = 10,
     this.waveCount = 3,
@@ -57,6 +57,7 @@ class TriangularBottleState extends State<TriangularBottle> with TickerProviderS
               waterLevel: widget.level,
               bottleColor: widget.bottleColor,
               capColor: widget.capColor,
+              waterColor: widget.waterColor,
             ),
           ),
         ),
@@ -88,7 +89,8 @@ class TriangularBottleStatePainter extends WaterBottlePainter {
     required List<Bubble> bubbles,
     required double waterLevel,
     required Color bottleColor,
-    required Color? capColor,
+    required Color capColor,
+    required Color waterColor,
   }) : super(
           repaint: repaint,
           waves: waves,
@@ -96,11 +98,11 @@ class TriangularBottleStatePainter extends WaterBottlePainter {
           level: waterLevel,
           bottleColor: bottleColor,
           capColor: capColor,
+          waterColor: waterColor,
         );
 
   @override
   void paintBottleMask(Canvas canvas, Size size, Paint paint) {
-    const SMOOTH_CORNER = true;
     final r = math.min(size.width, size.height);
     final neckTop = size.width * 0.1;
     final neckBottom = size.height - r + 3;
@@ -112,23 +114,20 @@ class TriangularBottleStatePainter extends WaterBottlePainter {
     final path = Path();
     path.moveTo(neckRingInner, neckTop);
     path.lineTo(neckRingInner, neckBottom);
-    if (SMOOTH_CORNER) {
-      final bodyLAX = (neckRingInner - bodyL) * 0.1 + bodyL;
-      final bodyLAY = (bodyBottom - neckBottom) * 0.9 + neckBottom;
-      final bodyLBX = (bodyR - bodyL) * 0.1 + bodyL;
-      final bodyLBY = bodyBottom;
-      final bodyRAX = size.width - bodyLAX;
-      final bodyRAY = bodyLAY;
-      final bodyRBX = size.width - bodyLBX;
-      final bodyRBY = bodyLBY;
-      path.lineTo(bodyLAX, bodyLAY);
-      path.conicTo(bodyL, bodyBottom, bodyLBX, bodyLBY, 1);
-      path.lineTo(bodyRBX, bodyRBY);
-      path.conicTo(bodyR, bodyBottom, bodyRAX, bodyRAY, 1);
-    } else {
-      path.lineTo(bodyL, bodyBottom);
-      path.lineTo(bodyR, bodyBottom);
-    }
+
+    final bodyLAX = (neckRingInner - bodyL) * 0.1 + bodyL;
+    final bodyLAY = (bodyBottom - neckBottom) * 0.9 + neckBottom;
+    final bodyLBX = (bodyR - bodyL) * 0.1 + bodyL;
+    final bodyLBY = bodyBottom;
+    final bodyRAX = size.width - bodyLAX;
+    final bodyRAY = bodyLAY;
+    final bodyRBX = size.width - bodyLBX;
+    final bodyRBY = bodyLBY;
+    path.lineTo(bodyLAX, bodyLAY);
+    path.conicTo(bodyL, bodyBottom, bodyLBX, bodyLBY, 1);
+    path.lineTo(bodyRBX, bodyRBY);
+    path.conicTo(bodyR, bodyBottom, bodyRAX, bodyRAY, 1);
+
     path.lineTo(neckRingInnerR, neckBottom);
     path.lineTo(neckRingInnerR, neckTop);
     path.close();
@@ -160,7 +159,6 @@ class TriangularBottleStatePainter extends WaterBottlePainter {
 
   @override
   void paintEmptyBottle(Canvas canvas, Size size, Paint paint) {
-    const SMOOTH_CORNER = true;
     final r = math.min(size.width, size.height);
     final neckTop = size.width * 0.1;
     final neckBottom = size.height - r + 3;
@@ -175,23 +173,20 @@ class TriangularBottleStatePainter extends WaterBottlePainter {
     path.moveTo(neckRingOuter, neckTop);
     path.lineTo(neckRingInner, neckTop);
     path.lineTo(neckRingInner, neckBottom);
-    if (SMOOTH_CORNER) {
-      final bodyLAX = (neckRingInner - bodyL) * 0.1 + bodyL;
-      final bodyLAY = (bodyBottom - neckBottom) * 0.9 + neckBottom;
-      final bodyLBX = (bodyR - bodyL) * 0.1 + bodyL;
-      final bodyLBY = bodyBottom;
-      final bodyRAX = size.width - bodyLAX;
-      final bodyRAY = bodyLAY;
-      final bodyRBX = size.width - bodyLBX;
-      final bodyRBY = bodyLBY;
-      path.lineTo(bodyLAX, bodyLAY);
-      path.conicTo(bodyL, bodyBottom, bodyLBX, bodyLBY, 1);
-      path.lineTo(bodyRBX, bodyRBY);
-      path.conicTo(bodyR, bodyBottom, bodyRAX, bodyRAY, 1);
-    } else {
-      path.lineTo(bodyL, bodyBottom);
-      path.lineTo(bodyR, bodyBottom);
-    }
+
+    final bodyLAX = (neckRingInner - bodyL) * 0.1 + bodyL;
+    final bodyLAY = (bodyBottom - neckBottom) * 0.9 + neckBottom;
+    final bodyLBX = (bodyR - bodyL) * 0.1 + bodyL;
+    final bodyLBY = bodyBottom;
+    final bodyRAX = size.width - bodyLAX;
+    final bodyRAY = bodyLAY;
+    final bodyRBX = size.width - bodyLBX;
+    final bodyRBY = bodyLBY;
+    path.lineTo(bodyLAX, bodyLAY);
+    path.conicTo(bodyL, bodyBottom, bodyLBX, bodyLBY, 1);
+    path.lineTo(bodyRBX, bodyRBY);
+    path.conicTo(bodyR, bodyBottom, bodyRAX, bodyRAY, 1);
+
     path.lineTo(neckRingInnerR, neckBottom);
     path.lineTo(neckRingInnerR, neckTop);
     path.lineTo(neckRingOuterR, neckTop);
